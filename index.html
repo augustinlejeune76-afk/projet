@@ -153,19 +153,12 @@ async function sendPosition() {
   const servoAngle = position + 90;
   const data = new TextEncoder().encode(servoAngle + "\n");
 
-  try {
-    if (txCharacteristic.properties.writeWithoutResponse) {
-      await txCharacteristic.writeValueWithoutResponse(data);
-    } else if (txCharacteristic.properties.write) {
-      await txCharacteristic.writeValueWithResponse(data);
-    } else {
-      throw new Error("Écriture Bluetooth non disponible");
-    }
-
+ try {
+    await txCharacteristic.writeValue(data);
     message.textContent = "Commande envoyée : " + position;
-  } catch (error) {
+} catch (error) {
     message.textContent = "Erreur d'envoi : " + error.message;
-  }
+}
 }
 
 async function connect() {
