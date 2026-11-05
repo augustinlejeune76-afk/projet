@@ -144,9 +144,10 @@
       }
       try {
         message.textContent = 'Recherche de la micro:bit…';
-        device = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [UART_SERVICE] }]
-        });
+     device = await navigator.bluetooth.requestDevice({
+  acceptAllDevices: true,
+  optionalServices: [UART_SERVICE]
+});
         device.addEventListener('gattserverdisconnected', onDisconnected);
 
         const server = await device.gatt.connect();
