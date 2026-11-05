@@ -147,18 +147,31 @@ function updateDisplay() {
   rightBtn.disabled = !txCharacteristic || position >= 90;
 }
 
+
 async function sendPosition() {
   if (!txCharacteristic) return;
 
   const servoAngle = position + 90;
   const data = new TextEncoder().encode(servoAngle + "\n");
 
- try {
-    await txCharacteristic.writeValue(data);
+  try {
+    if (txCharacteristic.properties.writeWithoutResponse) {
+      await txCharacteristic.writeValueWithoutResponse(data);
+    } else if (txCharacteristic.properties.write) {
+      await txCharacteristic.writeValueWithResponse(data);
+    } else {
+      throw new Error(
+        "Écriture impossible. write=" +
+        txCharacteristic.properties.write +
+        ", writeWithoutResponse=" +
+        txCharacteristic.properties.writeWithoutResponse
+      );
+    }
+
     message.textContent = "Commande envoyée : " + position;
-} catch (error) {
-    message.textContent = "Erreur d'envoi : " + error.message;
-}
+  } catch (error) {
+    message.textContent = "Erreur Bluetooth : " + error.message;
+  }
 }
 
 async function connect() {
